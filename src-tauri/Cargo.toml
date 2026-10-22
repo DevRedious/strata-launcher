@@ -1,6 +1,6 @@
 [package]
 name = "strata-launcher"
-version = "0.1.0"
+version = "0.2.0"
 description = "Installeur de Strata, une distribution de Vencord pour Discord"
 authors = ["DevRedious"]
 license = "GPL-3.0-or-later"
