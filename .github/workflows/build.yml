@@ -1,0 +1,99 @@
+# Compile le launcher sur une machine Windows de GitHub : tests, puis exe portable
+# avec son empreinte SHA-256. Un tag v* (par exemple v0.1.0) publie en plus une
+# release avec l'exe. Les binaires distribués viennent tous d'ici, jamais d'un
+# poste de développement : c'est aussi une condition de SignPath.
+name: Build
+
+on:
+    push:
+        branches:
+            - main
+        tags:
+            - "v*"
+    pull_request:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+env:
+    CARGO_TERM_COLOR: always
+
+jobs:
+    build:
+        runs-on: windows-latest
+
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: pnpm/action-setup@v6 # Version de pnpm lue dans package.json (packageManager)
+
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: 24
+                  cache: pnpm
+
+            - uses: dtolnay/rust-toolchain@stable
+
+            - uses: Swatinem/rust-cache@v2
+              with:
+                  workspaces: src-tauri
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Test
+              working-directory: src-tauri
+              run: cargo test --locked
+
+            - name: Build the exe
+              run: pnpm build
+
+            - name: Checksum
+              shell: pwsh
+              working-directory: src-tauri/target/release
+              run: |
+                  $hash = (Get-FileHash strata-launcher.exe -Algorithm SHA256).Hash.ToLower()
+                  "$hash  strata-launcher.exe" | Out-File -Encoding ascii strata-launcher.exe.sha256
+                  Get-Content strata-launcher.exe.sha256
+
+            - uses: actions/upload-artifact@v7
+              with:
+                  name: strata-launcher
+                  path: |
+                      src-tauri/target/release/strata-launcher.exe
+                      src-tauri/target/release/strata-launcher.exe.sha256
+                  if-no-files-found: error
+
+    release:
+        if: startsWith(github.ref, 'refs/tags/v')
+        needs: build
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+
+        steps:
+            - uses: actions/checkout@v7
+
+            # Le tag doit porter la version de l'application (tauri.conf.json)
+            - name: Check the version
+              run: |
+                  VERSION=$(jq -r .version src-tauri/tauri.conf.json)
+                  if [ "v$VERSION" != "$GITHUB_REF_NAME" ]; then
+                      echo "Le tag $GITHUB_REF_NAME ne correspond pas à la version $VERSION de tauri.conf.json"
+                      exit 1
+                  fi
+
+            - uses: actions/download-artifact@v8
+              with:
+                  name: strata-launcher
+                  path: dist
+
+            - name: Publish the release
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: |
+                  gh release create "$GITHUB_REF_NAME" dist/strata-launcher.exe dist/strata-launcher.exe.sha256 \
+                      --repo "$GITHUB_REPOSITORY" \
+                      --title "Strata Launcher $GITHUB_REF_NAME" \
+                      --notes "Installeur de Strata pour Windows. Télécharger strata-launcher.exe et le lancer : aucun droit administrateur n'est demandé. Empreinte SHA-256 dans strata-launcher.exe.sha256. Compilé par GitHub Actions depuis ${GITHUB_SHA}."
