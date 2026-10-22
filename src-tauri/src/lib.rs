@@ -1,6 +1,7 @@
 mod asar;
 mod demo;
 mod discord;
+mod icon;
 mod patch;
 mod paths;
 mod release;

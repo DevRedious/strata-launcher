@@ -33,6 +33,7 @@ pub fn installs() -> Vec<Install> {
             state,
             patcher: None,
             running: branch == Branch::Stable,
+            icon: None,
         })
         .collect()
 }

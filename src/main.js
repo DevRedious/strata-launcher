@@ -37,7 +37,12 @@ function render(installs) {
         const state = STATES[install.state];
         card.dataset.state = install.state;
         card.querySelector(".label").textContent = install.label;
-        card.querySelector(".version").textContent = install.version;
+        card.querySelector(".version").textContent = `v${install.version}`;
+        // Vraie icône de ce Discord (lue dans son installation), sinon l'icône neutre
+        if (install.icon) {
+            card.querySelector(".card-icon img").src = install.icon;
+            card.querySelector(".card-icon").classList.add("real");
+        }
         card.querySelector(".badge").textContent = state.badge;
         card.querySelector(".running").hidden = !install.running;
 

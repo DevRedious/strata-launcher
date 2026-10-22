@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, RefreshKind, System};
 
 use crate::asar;
+use crate::icon;
 use crate::paths::Paths;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -80,6 +81,8 @@ pub struct Install {
     /// patcher.js chargé quand Discord est modifié
     pub patcher: Option<String>,
     pub running: bool,
+    /// Icône de ce Discord (data URL), lue dans son installation
+    pub icon: Option<String>,
 }
 
 // « app-1.0.9264 » → [1, 0, 9264], pour comparer les versions numériquement
@@ -140,6 +143,7 @@ pub fn find(paths: &Paths) -> Vec<Install> {
                 state,
                 patcher,
                 running: running.iter().any(|exe| exe.eq_ignore_ascii_case(branch.exe())),
+                icon: icon::discord_icon(&branch.root(paths)),
             })
         })
         .collect()

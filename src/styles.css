@@ -151,6 +151,17 @@ main {
     height: 24px;
 }
 
+/* Icône du Discord installé : elle a déjà sa propre tuile */
+.card-icon.real {
+    background: none;
+}
+
+.card-icon.real img {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+}
+
 .card-text {
     flex: 1;
     min-width: 0;
@@ -162,10 +173,14 @@ main {
 }
 
 .version {
-    margin-left: 4px;
+    margin-left: 6px;
+    padding: 1px 7px;
+    border-radius: 6px;
+    background: rgb(255 255 255 / 6%);
     color: var(--muted);
-    font-weight: 400;
-    font-size: 12.5px;
+    font-weight: 500;
+    font-size: 11.5px;
+    font-variant-numeric: tabular-nums;
 }
 
 .card-state {
