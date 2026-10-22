@@ -60,9 +60,15 @@ mod tests {
 
     #[test]
     fn reads_back_the_patcher_path() {
-        assert_eq!(patcher_of(REFERENCE).as_deref(), Some(r"R:\Code\strata\dist\patcher.js"));
+        assert_eq!(
+            patcher_of(REFERENCE).as_deref(),
+            Some(r"R:\Code\strata\dist\patcher.js")
+        );
         let accents = Path::new(r"C:\Users\Élodie\AppData\Roaming\Strata\dist\patcher.js");
-        assert_eq!(patcher_of(&patch_asar(accents)).as_deref(), Some(accents.to_str().unwrap()));
+        assert_eq!(
+            patcher_of(&patch_asar(accents)).as_deref(),
+            Some(accents.to_str().unwrap())
+        );
     }
 
     #[test]

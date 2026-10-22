@@ -1,0 +1,2 @@
+# Mêmes contrôles que la CI (.github/workflows/build.yml), avant que le code parte
+cd src-tauri && cargo clippy --all-targets --locked -- -D warnings && cargo test --locked

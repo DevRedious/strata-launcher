@@ -13,7 +13,8 @@ pub fn enabled() -> bool {
     std::env::var_os("STRATA_DEMO").is_some_and(|v| v == "1")
 }
 
-static STATES: Mutex<[(Branch, State); 2]> = Mutex::new([(Branch::Stable, State::Original), (Branch::Ptb, State::Strata)]);
+static STATES: Mutex<[(Branch, State); 2]> =
+    Mutex::new([(Branch::Stable, State::Original), (Branch::Ptb, State::Strata)]);
 
 pub fn installs() -> Vec<Install> {
     STATES
@@ -23,7 +24,11 @@ pub fn installs() -> Vec<Install> {
         .map(|&(branch, state)| Install {
             branch,
             label: branch.label(),
-            version: if branch == Branch::Stable { "1.0.9264".into() } else { "1.0.1182".into() },
+            version: if branch == Branch::Stable {
+                "1.0.9264".into()
+            } else {
+                "1.0.1182".into()
+            },
             resources: Default::default(),
             state,
             patcher: None,
@@ -33,7 +38,10 @@ pub fn installs() -> Vec<Install> {
 }
 
 pub fn release() -> Release {
-    Release { name: "Strata 70860a5".into(), hash: "70860a5".into() }
+    Release {
+        name: "Strata 70860a5".into(),
+        hash: "70860a5".into(),
+    }
 }
 
 fn set_state(branch: Branch, state: State) {

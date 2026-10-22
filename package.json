@@ -1,16 +1,18 @@
 {
-    "name": "strata-launcher",
-    "private": true,
-    "version": "0.1.0",
-    "license": "GPL-3.0-or-later",
-    "type": "module",
-    "packageManager": "pnpm@12.14.0",
-    "scripts": {
-        "tauri": "tauri",
-        "dev": "tauri dev",
-        "build": "tauri build --no-bundle"
-    },
-    "devDependencies": {
-        "@tauri-apps/cli": "2.12.4"
-    }
+  "name": "strata-launcher",
+  "private": true,
+  "version": "0.1.0",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "packageManager": "pnpm@12.14.0",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build --no-bundle",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.12.4",
+    "husky": "9.1.7"
+  }
 }

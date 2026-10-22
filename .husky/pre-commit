@@ -1,0 +1,2 @@
+# Format Rust, rapide. Pour corriger : cd src-tauri && cargo fmt
+cd src-tauri && cargo fmt --check

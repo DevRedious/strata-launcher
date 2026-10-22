@@ -18,7 +18,10 @@ impl Paths {
                 .map(PathBuf::from)
                 .ok_or_else(|| format!("Variable d'environnement {name} introuvable"))
         };
-        Ok(Self { local_appdata: var("LOCALAPPDATA")?, appdata: var("APPDATA")? })
+        Ok(Self {
+            local_appdata: var("LOCALAPPDATA")?,
+            appdata: var("APPDATA")?,
+        })
     }
 
     /// Fichiers de Strata, à part de ceux de Vencord : relancer l'installeur

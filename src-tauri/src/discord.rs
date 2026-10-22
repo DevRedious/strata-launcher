@@ -84,7 +84,11 @@ pub struct Install {
 
 // « app-1.0.9264 » → [1, 0, 9264], pour comparer les versions numériquement
 fn version_of(dir: &OsStr) -> Option<Vec<u64>> {
-    dir.to_str()?.strip_prefix("app-")?.split('.').map(|n| n.parse().ok()).collect()
+    dir.to_str()?
+        .strip_prefix("app-")?
+        .split('.')
+        .map(|n| n.parse().ok())
+        .collect()
 }
 
 /// Dossier de la version la plus récente (Discord garde parfois l'ancienne à côté)
@@ -106,7 +110,9 @@ pub fn state_of(resources: &Path, paths: &Paths) -> (State, Option<String>) {
     if !resources.join("_app.asar").exists() {
         return (State::Original, None);
     }
-    let patcher = fs::read(resources.join("app.asar")).ok().and_then(|bytes| asar::patcher_of(&bytes));
+    let patcher = fs::read(resources.join("app.asar"))
+        .ok()
+        .and_then(|bytes| asar::patcher_of(&bytes));
     let state = match &patcher {
         Some(p) if same_file(p, &paths.patcher()) => State::Strata,
         _ => State::Other,
@@ -125,7 +131,11 @@ pub fn find(paths: &Paths) -> Vec<Install> {
             Some(Install {
                 branch,
                 label: branch.label(),
-                version: app_dir.file_name()?.to_string_lossy().trim_start_matches("app-").to_string(),
+                version: app_dir
+                    .file_name()?
+                    .to_string_lossy()
+                    .trim_start_matches("app-")
+                    .to_string(),
                 resources,
                 state,
                 patcher,
@@ -142,7 +152,11 @@ fn processes() -> System {
 }
 
 fn running_exes() -> Vec<String> {
-    processes().processes().values().map(|p| p.name().to_string_lossy().into_owned()).collect()
+    processes()
+        .processes()
+        .values()
+        .map(|p| p.name().to_string_lossy().into_owned())
+        .collect()
 }
 
 /// Ferme Discord (tous ses processus) et attend qu'il ait libéré ses fichiers
@@ -156,7 +170,10 @@ pub fn close(branch: Branch) -> Result<(), String> {
     let deadline = Instant::now() + Duration::from_secs(10);
     while processes().processes_by_exact_name(exe).next().is_some() {
         if Instant::now() > deadline {
-            return Err(format!("{} ne s'est pas fermé. Ferme-le à la main puis réessaie.", branch.label()));
+            return Err(format!(
+                "{} ne s'est pas fermé. Ferme-le à la main puis réessaie.",
+                branch.label()
+            ));
         }
         sleep(Duration::from_millis(250));
     }

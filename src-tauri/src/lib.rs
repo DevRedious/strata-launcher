@@ -12,7 +12,9 @@ use tauri::{AppHandle, Emitter};
 // Les opérations bloquent (fichiers, réseau, attente de fermeture de Discord) :
 // on les sort du fil de l'interface
 async fn blocking<T: Send + 'static>(job: impl FnOnce() -> Result<T, String> + Send + 'static) -> Result<T, String> {
-    tauri::async_runtime::spawn_blocking(job).await.map_err(|e| e.to_string())?
+    tauri::async_runtime::spawn_blocking(job)
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 // Étape en cours, affichée par l'interface
@@ -47,9 +49,17 @@ async fn latest_release() -> Result<release::Release, String> {
 async fn install(app: AppHandle, branch: Branch) -> Result<String, String> {
     if demo::enabled() {
         return blocking(move || {
-            let steps = ["Téléchargement de Strata…", &format!("Fermeture de {}…", branch.label()), "Installation…", &format!("Relance de {}…", branch.label())];
+            let steps = [
+                "Téléchargement de Strata…",
+                &format!("Fermeture de {}…", branch.label()),
+                "Installation…",
+                &format!("Relance de {}…", branch.label()),
+            ];
             demo::run(&steps, |m| step(&app, m), branch, State::Strata);
-            Ok(format!("Strata 70860a5 installé sur {} (démo : rien n'a été modifié).", branch.label()))
+            Ok(format!(
+                "Strata 70860a5 installé sur {} (démo : rien n'a été modifié).",
+                branch.label()
+            ))
         })
         .await;
     }
@@ -80,9 +90,16 @@ async fn install(app: AppHandle, branch: Branch) -> Result<String, String> {
 async fn uninstall(app: AppHandle, branch: Branch) -> Result<String, String> {
     if demo::enabled() {
         return blocking(move || {
-            let steps = [&format!("Fermeture de {}…", branch.label()), "Désinstallation…", &format!("Relance de {}…", branch.label())];
+            let steps = [
+                &format!("Fermeture de {}…", branch.label()),
+                "Désinstallation…",
+                &format!("Relance de {}…", branch.label()),
+            ];
             demo::run(&steps, |m| step(&app, m), branch, State::Original);
-            Ok(format!("Strata a été retiré de {} (démo : rien n'a été modifié).", branch.label()))
+            Ok(format!(
+                "Strata a été retiré de {} (démo : rien n'a été modifié).",
+                branch.label()
+            ))
         })
         .await;
     }

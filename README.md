@@ -75,6 +75,8 @@ cargo test -- --ignored --nocapture   # lecture seule sur la machine et téléch
 pnpm build                    # exe portable : src-tauri/target/release/strata-launcher.exe
 ```
 
+`pnpm install` active les crochets Git (Husky, `.husky/`) : `cargo fmt --check` avant chaque commit, `cargo clippy` et `cargo test` avant chaque push. La CI refait ces contrôles.
+
 | Chemin | Rôle |
 |---|---|
 | `src/` | Interface : HTML, CSS et JS, sans framework ni compilation. |

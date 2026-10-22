@@ -55,7 +55,10 @@ mod tests {
     // Faux %LOCALAPPDATA% et %APPDATA% avec un Discord installé, deux versions
     fn sandbox() -> (tempfile::TempDir, Paths, PathBuf) {
         let dir = tempfile::tempdir().unwrap();
-        let paths = Paths { local_appdata: dir.path().join("Local"), appdata: dir.path().join("Roaming") };
+        let paths = Paths {
+            local_appdata: dir.path().join("Local"),
+            appdata: dir.path().join("Roaming"),
+        };
         for version in ["app-1.0.9188", "app-1.0.9264"] {
             let resources = paths.local_appdata.join("Discord").join(version).join("resources");
             fs::create_dir_all(&resources).unwrap();

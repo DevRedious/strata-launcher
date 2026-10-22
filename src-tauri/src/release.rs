@@ -9,7 +9,11 @@ use serde::{Deserialize, Serialize};
 use ureq::tls::{RootCerts, TlsConfig, TlsProvider};
 
 pub const REPO: &str = "DevRedious/strata";
-const USER_AGENT: &str = concat!("StrataLauncher/", env!("CARGO_PKG_VERSION"), " (+https://github.com/DevRedious/strata-launcher)");
+const USER_AGENT: &str = concat!(
+    "StrataLauncher/",
+    env!("CARGO_PKG_VERSION"),
+    " (+https://github.com/DevRedious/strata-launcher)"
+);
 // Fichiers chargés par Discord (et leurs .map) : mêmes préfixes que VENCORD_FILES
 const FILES: [&str; 4] = ["patcher.js", "preload.js", "renderer.js", "renderer.css"];
 const MAX_FILE_SIZE: u64 = 50 * 1024 * 1024;
@@ -38,7 +42,10 @@ pub struct Release {
 fn agent() -> &'static ureq::Agent {
     static AGENT: OnceLock<ureq::Agent> = OnceLock::new();
     AGENT.get_or_init(|| {
-        let tls = TlsConfig::builder().provider(TlsProvider::NativeTls).root_certs(RootCerts::PlatformVerifier).build();
+        let tls = TlsConfig::builder()
+            .provider(TlsProvider::NativeTls)
+            .root_certs(RootCerts::PlatformVerifier)
+            .build();
         ureq::Agent::config_builder().tls_config(tls).build().into()
     })
 }
@@ -65,14 +72,21 @@ fn hash_of(name: &str) -> String {
 
 pub fn latest() -> Result<Release, String> {
     let release = fetch()?;
-    Ok(Release { hash: hash_of(&release.name), name: release.name })
+    Ok(Release {
+        hash: hash_of(&release.name),
+        name: release.name,
+    })
 }
 
 /// Télécharge les fichiers de la dernière release dans `dist`. Chaque fichier est
 /// d'abord écrit à côté puis renommé : une coupure ne laisse pas de fichier tronqué.
 pub fn download(dist: &Path) -> Result<Release, String> {
     let release = fetch()?;
-    let assets: Vec<&Asset> = release.assets.iter().filter(|a| FILES.iter().any(|f| a.name.starts_with(f))).collect();
+    let assets: Vec<&Asset> = release
+        .assets
+        .iter()
+        .filter(|a| FILES.iter().any(|f| a.name.starts_with(f)))
+        .collect();
     if !FILES.iter().all(|f| assets.iter().any(|a| &a.name == f)) {
         return Err(format!("La release « {} » est incomplète.", release.name));
     }
@@ -95,7 +109,10 @@ pub fn download(dist: &Path) -> Result<Release, String> {
         fs::rename(&partial, &target).map_err(|e| format!("Écriture de {} impossible : {e}", asset.name))?;
     }
 
-    Ok(Release { hash: hash_of(&release.name), name: release.name })
+    Ok(Release {
+        hash: hash_of(&release.name),
+        name: release.name,
+    })
 }
 
 #[cfg(test)]
@@ -117,7 +134,18 @@ mod tests {
             assert!(dir.path().join(file).metadata().unwrap().len() > 0, "{file} vide");
         }
         let banner = fs::read_to_string(dir.path().join("renderer.js")).unwrap();
-        assert!(banner.starts_with(&format!("// Vencord {}\n", release.hash)), "bannière : {}", &banner[..40]);
-        println!("{} téléchargée : {:?}", release.name, fs::read_dir(dir.path()).unwrap().map(|e| e.unwrap().file_name()).collect::<Vec<_>>());
+        assert!(
+            banner.starts_with(&format!("// Vencord {}\n", release.hash)),
+            "bannière : {}",
+            &banner[..40]
+        );
+        println!(
+            "{} téléchargée : {:?}",
+            release.name,
+            fs::read_dir(dir.path())
+                .unwrap()
+                .map(|e| e.unwrap().file_name())
+                .collect::<Vec<_>>()
+        );
     }
 }
