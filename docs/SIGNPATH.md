@@ -41,7 +41,7 @@ Windows (SmartScreen) et les antivirus (Norton…) se fient à la réputation d'
 | Nom du produit identique au nom du projet, version cohérente | Métadonnées de l'exe : « Strata Launcher », version de `tauri.conf.json` ; le tag doit correspondre (vérifié par le workflow) | Fait |
 | Approbation manuelle de chaque signature | Sur SignPath, après l'acceptation | Après acceptation |
 | Relecture de toute contribution extérieure | Indiqué dans la politique | Fait |
-| Authentification à deux facteurs, GitHub et SignPath, pour tous les membres | GitHub : à vérifier par DevRedious ; SignPath : à l'activation du compte | À vérifier |
+| Authentification à deux facteurs, GitHub et SignPath, pour tous les membres | GitHub : activée (confirmé par DevRedious le 2026-10-22) ; SignPath : à l'activation du compte | Fait pour GitHub |
 
 ### Comportement du programme
 
