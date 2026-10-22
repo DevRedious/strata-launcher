@@ -100,6 +100,10 @@ async fn uninstall(app: AppHandle, branch: Branch) -> Result<String, String> {
         // de Vencord (%APPDATA%\Vencord\settings) restent
         if !discord::find(&paths).iter().any(|i| i.state == State::Strata) {
             let _ = std::fs::remove_dir_all(paths.dist());
+            // Puis le dossier Strata lui-même, s'il est vide (remove_dir refuse sinon)
+            if let Some(strata) = paths.dist().parent() {
+                let _ = std::fs::remove_dir(strata);
+            }
         }
 
         step(&app, &format!("Relance de {}…", branch.label()));
