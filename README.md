@@ -60,6 +60,10 @@ logiciel malveillant. Le launcher fait donc le minimum, et de façon transparent
 - code source public, binaires compilés par GitHub Actions ; signature prévue via
   [SignPath Foundation](https://signpath.org/).
 
+## Code signing policy
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). Rôles, binaires concernés et confidentialité : [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md). La signature n'est pas encore active.
+
 ## Développement
 
 ```bash

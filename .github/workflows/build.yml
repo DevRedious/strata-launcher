@@ -16,6 +16,12 @@ on:
 permissions:
     contents: read
 
+# Une seule compilation à la fois par branche ou par tag : une exécution en
+# double (déclenchement répété par GitHub, push rapproché) annule la précédente
+concurrency:
+    group: build-${{ github.ref }}
+    cancel-in-progress: true
+
 env:
     CARGO_TERM_COLOR: always
 
