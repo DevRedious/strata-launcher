@@ -113,4 +113,6 @@ jobs:
                   gh release create "$GITHUB_REF_NAME" dist/strata-launcher.exe dist/strata-launcher.exe.sha256 \
                       --repo "$GITHUB_REPOSITORY" \
                       --title "Strata Launcher $GITHUB_REF_NAME" \
-                      --notes "Installeur de Strata pour Windows. Télécharger strata-launcher.exe et le lancer : aucun droit administrateur n'est demandé. Empreinte SHA-256 dans strata-launcher.exe.sha256. Compilé par GitHub Actions depuis ${GITHUB_SHA}."
+                      --notes "Installeur de Strata pour Windows. Télécharger strata-launcher.exe et le lancer : aucun droit administrateur n'est demandé. Empreinte SHA-256 dans strata-launcher.exe.sha256. Compilé par GitHub Actions depuis ${GITHUB_SHA}.
+
+                  **Code signing policy** : free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). Détails : [CODE_SIGNING_POLICY.md](https://github.com/${GITHUB_REPOSITORY}/blob/main/CODE_SIGNING_POLICY.md)."
