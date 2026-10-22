@@ -16,7 +16,7 @@
 
   <p align="center">
     <i>Installeur de Strata, une distribution de Vencord pour Discord.</i><br>
-    Dépôt  <a href="https://github.com/DevRedious/strata-launcher">DevRedious/strata-launcher</a>
+    Site  <a href="https://devredious.github.io/strata/">devredious.github.io/strata</a> · Dépôt  <a href="https://github.com/DevRedious/strata-launcher">DevRedious/strata-launcher</a>
   </p>
 </div>
 
@@ -62,7 +62,7 @@ logiciel malveillant. Le launcher fait donc le minimum, et de façon transparent
 
 ## Code signing policy
 
-Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). Rôles, binaires concernés et confidentialité : [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md). La signature n'est pas encore active.
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). Rôles, binaires concernés et confidentialité : [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md), aussi en ligne ([français](https://devredious.github.io/strata/signature.html), [English](https://devredious.github.io/strata/en/code-signing.html)). Politique de confidentialité : [français](https://devredious.github.io/strata/confidentialite.html), [English](https://devredious.github.io/strata/en/privacy.html). La signature n'est pas encore active.
 
 ## Développement
 
