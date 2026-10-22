@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Strata</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="main.js" defer></script>
+</head>
+<body>
+    <header class="head">
+        <img class="logo" src="logo.svg" alt="">
+        <div>
+            <h1>Strata</h1>
+            <p class="subtitle">Installe Strata sur Discord : thème, réglages et mises à jour automatiques.</p>
+        </div>
+        <span class="release" id="release" title="Dernière version publiée">…</span>
+    </header>
+
+    <main>
+        <section id="installs" class="installs" aria-live="polite">
+            <p class="empty">Recherche de Discord…</p>
+        </section>
+
+        <section id="status" class="status" hidden>
+            <span class="spinner" aria-hidden="true"></span>
+            <span id="status-text"></span>
+        </section>
+
+        <p class="notice">
+            Discord va se fermer puis se relancer : un appel en cours sera coupé.
+            Tes réglages et tes plugins Vencord sont conservés.
+        </p>
+    </main>
+
+    <footer class="foot">
+        <span>Comme tout client modifié, Strata est contraire aux conditions d'utilisation de Discord.</span>
+        <span class="source">github.com/DevRedious/strata</span>
+    </footer>
+
+    <template id="install-card">
+        <article class="card">
+            <div class="card-icon"><img src="chat.svg" alt=""></div>
+            <div class="card-text">
+                <div class="card-title"><span class="label"></span> <span class="version"></span></div>
+                <div class="card-state"><span class="badge"></span><span class="running">Ouvert</span></div>
+            </div>
+            <div class="card-actions">
+                <button class="ghost uninstall" type="button">Désinstaller</button>
+                <button class="primary install" type="button"></button>
+            </div>
+        </article>
+    </template>
+</body>
+</html>
