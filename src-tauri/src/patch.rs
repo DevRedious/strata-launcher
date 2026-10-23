@@ -9,6 +9,7 @@ use std::fs;
 use std::path::Path;
 
 use crate::asar;
+use crate::i18n::tr;
 
 pub fn apply(resources: &Path, patcher: &Path) -> Result<(), String> {
     let app = resources.join("app.asar");
@@ -17,16 +18,27 @@ pub fn apply(resources: &Path, patcher: &Path) -> Result<(), String> {
     // Déjà modifié (Strata, Vencord officiel…) : on garde le _app.asar d'origine
     if !original.exists() {
         if !app.is_file() {
-            return Err(format!("app.asar introuvable dans {}", resources.display()));
+            return Err(tr(
+                &format!("app.asar introuvable dans {}", resources.display()),
+                &format!("app.asar not found in {}", resources.display()),
+            ));
         }
-        fs::rename(&app, &original).map_err(|e| format!("Impossible de renommer app.asar : {e}"))?;
+        fs::rename(&app, &original).map_err(|e| {
+            tr(
+                &format!("Impossible de renommer app.asar : {e}"),
+                &format!("Could not rename app.asar: {e}"),
+            )
+        })?;
     }
 
     if let Err(e) = fs::write(&app, asar::patch_asar(patcher)) {
         // Rien ne doit rester à moitié fait : Discord retrouve son fichier d'origine
         let _ = fs::remove_file(&app);
         let _ = fs::rename(&original, &app);
-        return Err(format!("Impossible d'écrire app.asar : {e}"));
+        return Err(tr(
+            &format!("Impossible d'écrire app.asar : {e}"),
+            &format!("Could not write app.asar: {e}"),
+        ));
     }
     Ok(())
 }
@@ -35,12 +47,25 @@ pub fn remove(resources: &Path) -> Result<(), String> {
     let app = resources.join("app.asar");
     let original = resources.join("_app.asar");
     if !original.exists() {
-        return Err("Ce Discord n'est pas modifié : il n'y a rien à retirer.".into());
+        return Err(tr(
+            "Ce Discord n'est pas modifié : il n'y a rien à retirer.",
+            "This Discord is not modified: there is nothing to remove.",
+        ));
     }
     if app.exists() {
-        fs::remove_file(&app).map_err(|e| format!("Impossible de supprimer app.asar : {e}"))?;
+        fs::remove_file(&app).map_err(|e| {
+            tr(
+                &format!("Impossible de supprimer app.asar : {e}"),
+                &format!("Could not delete app.asar: {e}"),
+            )
+        })?;
     }
-    fs::rename(&original, &app).map_err(|e| format!("Impossible de restaurer app.asar : {e}"))
+    fs::rename(&original, &app).map_err(|e| {
+        tr(
+            &format!("Impossible de restaurer app.asar : {e}"),
+            &format!("Could not restore app.asar: {e}"),
+        )
+    })
 }
 
 #[cfg(test)]

@@ -8,6 +8,8 @@ use std::sync::OnceLock;
 use serde::{Deserialize, Serialize};
 use ureq::tls::{RootCerts, TlsConfig, TlsProvider};
 
+use crate::i18n::tr;
+
 pub const REPO: &str = "DevRedious/strata";
 const USER_AGENT: &str = concat!(
     "StrataLauncher/",
@@ -56,14 +58,24 @@ fn get(url: &str) -> Result<ureq::http::Response<ureq::Body>, String> {
         .header("User-Agent", USER_AGENT)
         .header("Accept", "application/vnd.github+json")
         .call()
-        .map_err(|e| format!("Échec du téléchargement ({url}) : {e}"))
+        .map_err(|e| {
+            tr(
+                &format!("Échec du téléchargement ({url}) : {e}"),
+                &format!("Download failed ({url}): {e}"),
+            )
+        })
 }
 
 fn fetch() -> Result<GithubRelease, String> {
     get(&format!("https://api.github.com/repos/{REPO}/releases/latest"))?
         .body_mut()
         .read_json()
-        .map_err(|e| format!("Réponse de GitHub illisible : {e}"))
+        .map_err(|e| {
+            tr(
+                &format!("Réponse de GitHub illisible : {e}"),
+                &format!("Unreadable response from GitHub: {e}"),
+            )
+        })
 }
 
 fn hash_of(name: &str) -> String {
@@ -88,10 +100,18 @@ pub fn download(dist: &Path) -> Result<Release, String> {
         .filter(|a| FILES.iter().any(|f| a.name.starts_with(f)))
         .collect();
     if !FILES.iter().all(|f| assets.iter().any(|a| &a.name == f)) {
-        return Err(format!("La release « {} » est incomplète.", release.name));
+        return Err(tr(
+            &format!("La version « {} » est incomplète.", release.name),
+            &format!("Release “{}” is incomplete.", release.name),
+        ));
     }
 
-    fs::create_dir_all(dist).map_err(|e| format!("Impossible de créer {} : {e}", dist.display()))?;
+    fs::create_dir_all(dist).map_err(|e| {
+        tr(
+            &format!("Impossible de créer {} : {e}", dist.display()),
+            &format!("Could not create {}: {e}", dist.display()),
+        )
+    })?;
     // Sans package.json, Node remonterait l'arborescence à la recherche d'un autre
     // (comme le fait l'installeur officiel de Vencord)
     fs::write(dist.join("package.json"), "{}").map_err(|e| e.to_string())?;
@@ -102,11 +122,26 @@ pub fn download(dist: &Path) -> Result<Release, String> {
             .with_config()
             .limit(MAX_FILE_SIZE)
             .read_to_vec()
-            .map_err(|e| format!("Téléchargement de {} interrompu : {e}", asset.name))?;
+            .map_err(|e| {
+                tr(
+                    &format!("Téléchargement de {} interrompu : {e}", asset.name),
+                    &format!("Download of {} interrupted: {e}", asset.name),
+                )
+            })?;
         let target = dist.join(&asset.name);
         let partial = dist.join(format!("{}.partial", asset.name));
-        fs::write(&partial, bytes).map_err(|e| format!("Écriture de {} impossible : {e}", asset.name))?;
-        fs::rename(&partial, &target).map_err(|e| format!("Écriture de {} impossible : {e}", asset.name))?;
+        fs::write(&partial, bytes).map_err(|e| {
+            tr(
+                &format!("Écriture de {} impossible : {e}", asset.name),
+                &format!("Could not write {}: {e}", asset.name),
+            )
+        })?;
+        fs::rename(&partial, &target).map_err(|e| {
+            tr(
+                &format!("Écriture de {} impossible : {e}", asset.name),
+                &format!("Could not write {}: {e}", asset.name),
+            )
+        })?;
     }
 
     Ok(Release {

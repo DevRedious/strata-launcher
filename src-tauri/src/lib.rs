@@ -1,12 +1,14 @@
 mod asar;
 mod demo;
 mod discord;
+mod i18n;
 mod icon;
 mod patch;
 mod paths;
 mod release;
 
 use discord::{Branch, Install, State};
+use i18n::tr;
 use paths::Paths;
 use tauri::{AppHandle, Emitter};
 
@@ -23,11 +25,39 @@ fn step(app: &AppHandle, message: &str) {
     let _ = app.emit("progress", message);
 }
 
+fn downloading() -> String {
+    tr("Téléchargement de Strata…", "Downloading Strata…")
+}
+
+fn closing(branch: Branch) -> String {
+    tr(
+        &format!("Fermeture de {}…", branch.label()),
+        &format!("Closing {}…", branch.label()),
+    )
+}
+
+fn relaunching(branch: Branch) -> String {
+    tr(
+        &format!("Relance de {}…", branch.label()),
+        &format!("Restarting {}…", branch.label()),
+    )
+}
+
 fn find_install(paths: &Paths, branch: Branch) -> Result<Install, String> {
     discord::find(paths)
         .into_iter()
         .find(|i| i.branch == branch)
-        .ok_or_else(|| format!("{} n'est pas installé.", branch.label()))
+        .ok_or_else(|| {
+            tr(
+                &format!("{} n'est pas installé.", branch.label()),
+                &format!("{} is not installed.", branch.label()),
+            )
+        })
+}
+
+#[tauri::command]
+fn set_language(lang: String) {
+    i18n::set(&lang);
 }
 
 #[tauri::command]
@@ -51,15 +81,26 @@ async fn install(app: AppHandle, branch: Branch) -> Result<String, String> {
     if demo::enabled() {
         return blocking(move || {
             let steps = [
-                "Téléchargement de Strata…",
-                &format!("Fermeture de {}…", branch.label()),
-                "Installation…",
-                &format!("Relance de {}…", branch.label()),
+                downloading(),
+                closing(branch),
+                tr("Installation…", "Installing…"),
+                relaunching(branch),
             ];
-            demo::run(&steps, |m| step(&app, m), branch, State::Strata);
-            Ok(format!(
-                "Strata 70860a5 installé sur {} (démo : rien n'a été modifié).",
-                branch.label()
+            demo::run(
+                &steps.each_ref().map(String::as_str),
+                |m| step(&app, m),
+                branch,
+                State::Strata,
+            );
+            Ok(tr(
+                &format!(
+                    "Strata 70860a5 installé sur {} (démo : rien n'a été modifié).",
+                    branch.label()
+                ),
+                &format!(
+                    "Strata 70860a5 installed on {} (demo: nothing was changed).",
+                    branch.label()
+                ),
             ))
         })
         .await;
@@ -70,19 +111,22 @@ async fn install(app: AppHandle, branch: Branch) -> Result<String, String> {
 
         // Téléchargement d'abord, Discord encore ouvert : il n'est fermé que le
         // temps de modifier un fichier
-        step(&app, "Téléchargement de Strata…");
+        step(&app, &downloading());
         let release = release::download(&paths.dist())?;
 
-        step(&app, &format!("Fermeture de {}…", branch.label()));
+        step(&app, &closing(branch));
         discord::close(branch)?;
 
-        step(&app, "Installation…");
+        step(&app, &tr("Installation…", "Installing…"));
         patch::apply(&target.resources, &paths.patcher())?;
 
-        step(&app, &format!("Relance de {}…", branch.label()));
+        step(&app, &relaunching(branch));
         discord::launch(branch, &paths)?;
 
-        Ok(format!("{} installé sur {}.", release.name, branch.label()))
+        Ok(tr(
+            &format!("{} installé sur {}.", release.name, branch.label()),
+            &format!("{} installed on {}.", release.name, branch.label()),
+        ))
     })
     .await
 }
@@ -92,14 +136,25 @@ async fn uninstall(app: AppHandle, branch: Branch) -> Result<String, String> {
     if demo::enabled() {
         return blocking(move || {
             let steps = [
-                &format!("Fermeture de {}…", branch.label()),
-                "Désinstallation…",
-                &format!("Relance de {}…", branch.label()),
+                closing(branch),
+                tr("Désinstallation…", "Uninstalling…"),
+                relaunching(branch),
             ];
-            demo::run(&steps, |m| step(&app, m), branch, State::Original);
-            Ok(format!(
-                "Strata a été retiré de {} (démo : rien n'a été modifié).",
-                branch.label()
+            demo::run(
+                &steps.each_ref().map(String::as_str),
+                |m| step(&app, m),
+                branch,
+                State::Original,
+            );
+            Ok(tr(
+                &format!(
+                    "Strata a été retiré de {} (démo : rien n'a été modifié).",
+                    branch.label()
+                ),
+                &format!(
+                    "Strata was removed from {} (demo: nothing was changed).",
+                    branch.label()
+                ),
             ))
         })
         .await;
@@ -108,10 +163,10 @@ async fn uninstall(app: AppHandle, branch: Branch) -> Result<String, String> {
         let paths = Paths::from_env()?;
         let target = find_install(&paths, branch)?;
 
-        step(&app, &format!("Fermeture de {}…", branch.label()));
+        step(&app, &closing(branch));
         discord::close(branch)?;
 
-        step(&app, "Désinstallation…");
+        step(&app, &tr("Désinstallation…", "Uninstalling…"));
         patch::remove(&target.resources)?;
 
         // Plus aucun Discord ne charge Strata : ses fichiers partent, les réglages
@@ -124,17 +179,26 @@ async fn uninstall(app: AppHandle, branch: Branch) -> Result<String, String> {
             }
         }
 
-        step(&app, &format!("Relance de {}…", branch.label()));
+        step(&app, &relaunching(branch));
         discord::launch(branch, &paths)?;
 
-        Ok(format!("Strata a été retiré de {}.", branch.label()))
+        Ok(tr(
+            &format!("Strata a été retiré de {}.", branch.label()),
+            &format!("Strata was removed from {}.", branch.label()),
+        ))
     })
     .await
 }
 
 pub fn run() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![installs, latest_release, install, uninstall])
+        .invoke_handler(tauri::generate_handler![
+            set_language,
+            installs,
+            latest_release,
+            install,
+            uninstall
+        ])
         .run(tauri::generate_context!())
         .expect("erreur au démarrage du launcher");
 }

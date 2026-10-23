@@ -14,9 +14,12 @@ pub struct Paths {
 impl Paths {
     pub fn from_env() -> Result<Self, String> {
         let var = |name: &str| {
-            std::env::var_os(name)
-                .map(PathBuf::from)
-                .ok_or_else(|| format!("Variable d'environnement {name} introuvable"))
+            std::env::var_os(name).map(PathBuf::from).ok_or_else(|| {
+                crate::i18n::tr(
+                    &format!("Variable d'environnement {name} introuvable"),
+                    &format!("Environment variable {name} not found"),
+                )
+            })
         };
         Ok(Self {
             local_appdata: var("LOCALAPPDATA")?,

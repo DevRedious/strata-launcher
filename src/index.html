@@ -8,18 +8,30 @@
     <script src="main.js" defer></script>
 </head>
 <body>
+    <!-- Première étape, au premier lancement : la langue (gardée ensuite, changeable en haut à droite) -->
+    <section id="language" class="language" hidden>
+        <img class="logo" src="logo.svg" alt="">
+        <h1>Strata</h1>
+        <p class="language-question"><span lang="fr">Choisis ta langue</span> · <span lang="en">Choose your language</span></p>
+        <div class="dropdown dropdown-large" id="language-picker"></div>
+        <button class="primary language-continue" id="language-continue" type="button"></button>
+    </section>
+
     <header class="head">
         <img class="logo" src="logo.svg" alt="">
         <div>
             <h1>Strata</h1>
-            <p class="subtitle">Installe Strata sur Discord : thème, réglages et mises à jour automatiques.</p>
+            <p class="subtitle" data-i18n="subtitle"></p>
         </div>
-        <span class="release" id="release" title="Dernière version publiée">…</span>
+        <div class="head-side">
+            <div class="dropdown dropdown-small" id="lang-switch"></div>
+            <span class="release" id="release"></span>
+        </div>
     </header>
 
     <main>
         <section id="installs" class="installs" aria-live="polite">
-            <p class="empty">Recherche de Discord…</p>
+            <p class="empty" data-i18n="searching"></p>
         </section>
 
         <section id="status" class="status" hidden>
@@ -27,14 +39,11 @@
             <span id="status-text"></span>
         </section>
 
-        <p class="notice">
-            Discord va se fermer puis se relancer : un appel en cours sera coupé.
-            Tes réglages et tes plugins Vencord sont conservés.
-        </p>
+        <p class="notice" data-i18n="notice"></p>
     </main>
 
     <footer class="foot">
-        <span>Comme tout client modifié, Strata est contraire aux conditions d'utilisation de Discord.</span>
+        <span data-i18n="tos"></span>
         <span class="source">github.com/DevRedious/strata</span>
     </footer>
 
@@ -43,10 +52,10 @@
             <div class="card-icon"><img src="chat.svg" alt=""></div>
             <div class="card-text">
                 <div class="card-title"><span class="label"></span> <span class="version"></span></div>
-                <div class="card-state"><span class="badge"></span><span class="running">Ouvert</span></div>
+                <div class="card-state"><span class="badge"></span><span class="running" data-i18n="running"></span></div>
             </div>
             <div class="card-actions">
-                <button class="ghost uninstall" type="button">Désinstaller</button>
+                <button class="ghost uninstall" type="button" data-i18n="uninstall"></button>
                 <button class="primary install" type="button"></button>
             </div>
         </article>

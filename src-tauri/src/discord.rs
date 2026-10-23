@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, RefreshKind, System};
 
 use crate::asar;
+use crate::i18n::tr;
 use crate::icon;
 use crate::paths::Paths;
 
@@ -174,9 +175,12 @@ pub fn close(branch: Branch) -> Result<(), String> {
     let deadline = Instant::now() + Duration::from_secs(10);
     while processes().processes_by_exact_name(exe).next().is_some() {
         if Instant::now() > deadline {
-            return Err(format!(
-                "{} ne s'est pas fermé. Ferme-le à la main puis réessaie.",
-                branch.label()
+            return Err(tr(
+                &format!(
+                    "{} ne s'est pas fermé. Ferme-le à la main puis réessaie.",
+                    branch.label()
+                ),
+                &format!("{} did not close. Close it yourself, then try again.", branch.label()),
             ));
         }
         sleep(Duration::from_millis(250));
@@ -192,5 +196,10 @@ pub fn launch(branch: Branch, paths: &Paths) -> Result<(), String> {
         .args(["--processStart", branch.exe()])
         .spawn()
         .map(|_| ())
-        .map_err(|e| format!("Impossible de relancer {} : {e}", branch.label()))
+        .map_err(|e| {
+            tr(
+                &format!("Impossible de relancer {} : {e}", branch.label()),
+                &format!("Could not restart {}: {e}", branch.label()),
+            )
+        })
 }

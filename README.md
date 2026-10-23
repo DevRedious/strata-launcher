@@ -22,9 +22,9 @@
 
 ---
 
-> **État : en développement.** La logique est écrite et testée, l'interface est en place.
-> Restent le test réel d'installation, la compilation dans GitHub Actions, la signature du
-> programme et la passe visuelle. Pas encore de version à télécharger.
+> **État : utilisable.** Testé en vrai sur Discord (installer, réparer, désinstaller), compilé et
+> publié par GitHub Actions ([releases](https://github.com/DevRedious/strata-launcher/releases)).
+> Reste la signature du programme, demandée à SignPath Foundation.
 
 ## Présentation
 
@@ -36,6 +36,9 @@ publié dans les releases de `DevRedious/strata`. Ce launcher l'installe sur Dis
 - **Installer** télécharge la dernière release dans `%APPDATA%\Strata\dist`, ferme Discord, le
   branche sur Strata et le relance ;
 - **Réparer** refait la même chose, **Désinstaller** rend Discord à son état d'origine.
+
+L'interface existe en français et en anglais : la langue se choisit dans une liste déroulante (avec drapeaux) au premier lancement, puis
+avec le bouton en haut à droite. Elle est gardée dans le stockage local de la fenêtre.
 
 Les mises à jour suivantes passent par l'outil de mise à jour intégré à Vencord, et Strata se
 réapplique tout seul quand Discord se met à jour. On ne rouvre le launcher que pour réparer ou
@@ -85,7 +88,8 @@ pnpm build                    # exe portable : src-tauri/target/release/strata-l
 | `src-tauri/src/asar.rs` | La petite archive `app.asar`. |
 | `src-tauri/src/release.rs` | Dernière release de Strata et téléchargement. |
 | `src-tauri/src/demo.rs` | Mode démo (`STRATA_DEMO=1`). |
-| `preview/` | Aperçu dans un navigateur, avec des données simulées (`node preview/build.mjs`). |
+| `src-tauri/src/i18n.rs` | Langue des messages renvoyés à l'interface (`tr("…", "…")`), choisie par l'interface. |
+| `preview/` | Aperçu dans un navigateur, avec des données simulées (`node preview/build.mjs`, puis `#liste`, `#installation`, `#vide`, `#langue` ou `#en`). |
 
 ## Avertissement
 
